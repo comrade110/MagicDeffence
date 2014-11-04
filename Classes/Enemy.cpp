@@ -65,7 +65,7 @@ Sprite* Enemy::createEnemy(){
 //    this->addChild(enemy);
     FiniteTimeAction* r = RotateBy::create(2.f, 360.f);
     enemy->runAction(RepeatForever::create((ActionInterval*)r));
-    signNum = 2;
+    signNum = 1;
     scheduleUpdate();
     
     

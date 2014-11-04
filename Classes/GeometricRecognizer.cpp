@@ -34,30 +34,37 @@ namespace DollarRecognizer
 	void GeometricRecognizer::loadTemplates()
 	{
 		SampleGestures samples;
-
-		addTemplate("Arrow", samples.getGestureArrow());
-		addTemplate("Caret", samples.getGestureCaret());
-		addTemplate("CheckMark", samples.getGestureCheckMark());
-		addTemplate("Circle", samples.getGestureCircle());
-		addTemplate("Delete", samples.getGestureDelete());
-		addTemplate("Diamond", samples.getGestureDiamond());
+        
+        addTemplate("Line", samples.getGestureLine());
+        addTemplate("Tied", samples.getGestureTied());
+        addTemplate("TiedLeft", samples.getGestureTiedLeft());
+        addTemplate("Circle", samples.getGestureCircle());
+        addTemplate("CircleBottom", samples.getGestureCircleBottom());
+        addTemplate("V", samples.getGestureV());
+        addTemplate("V2", samples.getGestureV2());
+        addTemplate("TriangleLeft", samples.getGestureTriangleLeft());
+        addTemplate("TriangleRight", samples.getGestureTriangleRight());
 		//addTemplate("LeftCurlyBrace", samples.getGestureLeftCurlyBrace());
-		addTemplate("LeftSquareBracket", samples.getGestureLeftSquareBracket());
-		addTemplate("LeftToRightLine", samples.getGestureLeftToRightLine());
-		addTemplate("LineDownDiagonal", samples.getGestureLineDownDiagonal());
-		addTemplate("Pigtail", samples.getGesturePigtail());
-		addTemplate("QuestionMark", samples.getGestureQuestionMark());
-		addTemplate("Rectangle", samples.getGestureRectangle());
+//		addTemplate("LeftSquareBracket", samples.getGestureLeftSquareBracket());
+//		addTemplate("LeftToRightLine", samples.getGestureLeftToRightLine());
+//		addTemplate("LineDownDiagonal", samples.getGestureLineDownDiagonal());
 		//addTemplate("RightCurlyBrace", samples.getGestureRightCurlyBrace());
-		addTemplate("RightSquareBracket", samples.getGestureRightSquareBracket());
-		addTemplate("RightToLeftLine", samples.getGestureRightToLeftLine());
-		addTemplate("RightToLeftLine2", samples.getGestureRightToLeftLine2());
-		addTemplate("RightToLeftSlashDown", samples.getGestureRightToLeftSlashDown());
-		addTemplate("Spiral", samples.getGestureSpiral());
-		addTemplate("Star", samples.getGestureStar());
-		addTemplate("Triangle", samples.getGestureTriangle());
-		addTemplate("V", samples.getGestureV());
-		addTemplate("X", samples.getGestureX());
+//		addTemplate("RightSquareBracket", samples.getGestureRightSquareBracket());
+//		addTemplate("RightToLeftLine", samples.getGestureRightToLeftLine());
+//		addTemplate("RightToLeftLine2", samples.getGestureRightToLeftLine2());
+//		addTemplate("RightToLeftSlashDown", samples.getGestureRightToLeftSlashDown());
+//		addTemplate("Spiral", samples.getGestureSpiral());
+//		addTemplate("Star", samples.getGestureStar());
+//        addTemplate("Triangle", samples.getGestureTriangle());
+//        addTemplate("Pigtail", samples.getGesturePigtail());
+//        addTemplate("QuestionMark", samples.getGestureQuestionMark());
+//        addTemplate("Rectangle", samples.getGestureRectangle());
+//        addTemplate("Delete", samples.getGestureDelete());
+//        addTemplate("Diamond", samples.getGestureDiamond()dui);
+////        addTemplate("Arrow", samples.getGestureArrow());
+//        addTemplate("Caret", samples.getGestureCaret());
+        addTemplate("CheckMark", samples.getGestureCheckMark());
+//		addTemplate("X", samples.getGestureX());
 	}
 
 	int GeometricRecognizer::addTemplate(string name, Path2D points)
@@ -218,7 +225,9 @@ namespace DollarRecognizer
 		}
 
 		points = normalizePath(points);
-	
+        for(Point2D po:points){
+            printf("path.push_back(Point2D(%.0f,%.0f));\n",po.x,po.y);
+        }
 		//--- Initialize best distance to the largest possible number
 		//--- That way everything will be better than that
 		double bestDistance = MAX_DOUBLE;

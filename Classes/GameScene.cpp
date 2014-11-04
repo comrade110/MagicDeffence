@@ -51,9 +51,12 @@ bool GameScene::init(){
     
     auto listener1 = EventListenerTouchOneByOne::create();//创建一个触摸监听
     listener1->setSwallowTouches(true); //设置是否想下传递触摸
-    listener1->onTouchBegan = [](Touch* touch, Event* event){
-        return true;
-    };
+//    listener1->onTouchBegan = [](Touch* touch, Event* event){
+//        Point location = touch->getLocation();
+//        pre_point = cur_point = location;
+//        return true;
+//    };
+    listener1->onTouchBegan = CC_CALLBACK_2(GameScene::onTouchBegan, this);
     listener1->onTouchMoved = CC_CALLBACK_2(GameScene::onTouchMoved, this);
     listener1->onTouchEnded = CC_CALLBACK_2(GameScene::onTouchEnded, this);
     Director::getInstance()->getEventDispatcher()->addEventListenerWithSceneGraphPriority(listener1, this);
@@ -121,8 +124,24 @@ void GameScene::startDrop(float dt,Sprite* em){
     em->runAction(Sequence::create(delay,actionMove,actionMoveDone, NULL));
 }
 
+
+bool GameScene::onTouchBegan(cocos2d::Touch *touch, cocos2d::Event *unused_event){
+    Point location = touch->getLocation();
+    pre_point = cur_point = location;
+    return true;
+}
+
+
+
 void GameScene::onTouchMoved(cocos2d::Touch *touch, cocos2d::Event *unused_event){
-    Point location = touch->getLocationInView();
+    Point location = touch->getLocation();
+    cur_point = location;
+    if((pre_point - cur_point).getLengthSq()>25){
+        seg.p1=pre_point;
+        seg.p2=cur_point;
+        segment.push_back(seg);
+        pre_point=cur_point;
+    }
     Point2D p_Point2DTemp;
     p_Point2DTemp.x=location.x;
     p_Point2DTemp.y=location.y;
@@ -131,13 +150,22 @@ void GameScene::onTouchMoved(cocos2d::Touch *touch, cocos2d::Event *unused_event
 }
 
 void GameScene::onTouchEnded(cocos2d::Touch *touch, cocos2d::Event *unused_event){
+    Point location = touch->getLocation();
+    cur_point = location;
+    if((pre_point - cur_point).getLengthSq()>25){
+        seg.p1=pre_point;
+        seg.p2=cur_point;
+        segment.push_back(seg);
+        pre_point=cur_point;
+    }
     log("done");
     if (p_2dPath.size() < 1){
         return ;
     }
     RecognitionResult result = g_rGemertricRecognizer->recognize(p_2dPath);
     log("%s--%.2f",result.name.c_str(),result.score);
-    if (result.score<0.7) {
+    p_2dPath.clear();
+    if (result.score<0.75) {
         return;
     }
     size_t len = curWave.size();
@@ -150,11 +178,10 @@ void GameScene::onTouchEnded(cocos2d::Touch *touch, cocos2d::Event *unused_event
         auto sign = em->getSignArr().back();  // 获取signarr中最上层的一个
         
         //判断最上层标志是否与手势相符
-        
         log("界面图片%d:用户手势%d",sign->getSignType(),this->resultTypeByName(Value(result.name)));
         if (sign->getSignType()==this->resultTypeByName(Value(result.name))) {
             auto lastObj = emy->getChildren().back();      // 相等的话 直接获取sprite中子类最新一个精灵
-            lastObj->removeFromParent();                   // 移除该精灵
+            lastObj->removeFromParent();// 移除该精灵
             if (em->getChildrenCount()==0) {               // 移除之后判断有无子精灵
                 emy->removeFromParent();      // 没有则销毁该精灵
             }
@@ -168,16 +195,16 @@ int GameScene::resultTypeByName(Value v){
 
     if (v == Value("Line")) {
         return 1;
-    }else if (v == Value("Tied")){
+    }else if (v == Value("Tied") || v == Value("TiedLeft")){
         
         return 2;
-    }else if (v == Value("Circle")){
+    }else if (v == Value("Circle")|| v==Value("CircleBottom")){
         
         return 3;
-    }else if (v == Value("Sharp")){
+    }else if (v == Value("V") || v == Value("V2")){
         
         return 4;
-    }else if (v == Value("Triangle")){
+    }else if (v == Value("TriangleLeft") || v == Value("TriangleRight")){
         
         return 5;
     }
@@ -185,4 +212,13 @@ int GameScene::resultTypeByName(Value v){
 
 }
 
+
+void GameScene::draw(Renderer *renderer,const Mat4& transform,uint32_t flags){
+    DrawPrimitives::setDrawColor4B(0, 255, 255, 255);
+//    glLineWidth(4);
+//    for (std::vector<_segment >::const_iterator i=segment.begin(); i!=segment.end(); i++){
+//        DrawPrimitives::drawLine(i->p1, i->p2);
+//        DrawNode::draw;
+//    }
+}
 

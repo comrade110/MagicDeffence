@@ -67,6 +67,7 @@
 		BF1C47F01293687400B63C5D /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF1C47EA1293683800B63C5D /* QuartzCore.framework */; };
 		D338A5B219B9877C00A6D879 /* Enemy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D338A5B019B9877C00A6D879 /* Enemy.cpp */; };
 		D338A5B619B9901F00A6D879 /* circle.png in Resources */ = {isa = PBXBuildFile; fileRef = D338A5B519B9901F00A6D879 /* circle.png */; };
+		D3B4085919D01AE50043849F /* savedPath.txt in Resources */ = {isa = PBXBuildFile; fileRef = D3B4085819D01AE50043849F /* savedPath.txt */; };
 		D3B712DD19B8075F0051396A /* StartScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D3B712DB19B8075F0051396A /* StartScene.cpp */; };
 		D3B712E519B834E80051396A /* LoadingLayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D3B712E319B834E80051396A /* LoadingLayer.cpp */; };
 		D3B7BEBE19CA90790045184E /* sign_1.png in Resources */ = {isa = PBXBuildFile; fileRef = D3B7BEB919CA90790045184E /* sign_1.png */; };
@@ -279,6 +280,7 @@
 		D338A5B019B9877C00A6D879 /* Enemy.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Enemy.cpp; path = ../Classes/Enemy.cpp; sourceTree = "<group>"; };
 		D338A5B119B9877C00A6D879 /* Enemy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Enemy.h; path = ../Classes/Enemy.h; sourceTree = "<group>"; };
 		D338A5B519B9901F00A6D879 /* circle.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = circle.png; sourceTree = "<group>"; };
+		D3B4085819D01AE50043849F /* savedPath.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = savedPath.txt; sourceTree = "<group>"; };
 		D3B712DB19B8075F0051396A /* StartScene.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = StartScene.cpp; path = ../Classes/StartScene.cpp; sourceTree = "<group>"; };
 		D3B712DC19B8075F0051396A /* StartScene.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = StartScene.h; path = ../Classes/StartScene.h; sourceTree = "<group>"; };
 		D3B712E319B834E80051396A /* LoadingLayer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LoadingLayer.cpp; path = ../Classes/LoadingLayer.cpp; sourceTree = "<group>"; };
@@ -392,6 +394,7 @@
 				D3B7BEC619CAB56F0045184E /* GestureTemplate.h */,
 				D3B7BEC719CAB56F0045184E /* PathWriter.h */,
 				D3B7BEC819CAB56F0045184E /* SampleGestures.h */,
+				D3B4085819D01AE50043849F /* savedPath.txt */,
 			);
 			name = Classes;
 			path = ../classes;
@@ -586,7 +589,7 @@
 				LastUpgradeCheck = 0500;
 				TargetAttributes = {
 					1D6058900D05DD3D006BFB54 = {
-						DevelopmentTeam = MDDB52YB8L;
+						DevelopmentTeam = 2QEUAT8WGW;
 					};
 				};
 			};
@@ -699,6 +702,7 @@
 				5087E77F17EB970100C73F5D /* Default@2x.png in Resources */,
 				50EF629917ECD46A001EB2F8 /* Icon-100.png in Resources */,
 				D3B7BEBF19CA90790045184E /* sign_2.png in Resources */,
+				D3B4085919D01AE50043849F /* savedPath.txt in Resources */,
 				1AFAF8BC16D35E4900DB1158 /* CloseNormal.png in Resources */,
 				5087E78317EB970100C73F5D /* Icon-152.png in Resources */,
 				D3B7BEBE19CA90790045184E /* sign_1.png in Resources */,
@@ -825,7 +829,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = YES;
-				CODE_SIGN_IDENTITY = "iPhone Developer: hongxiang chen (TPW4A222GA)";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COMPRESS_PNG_FILES = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
@@ -846,7 +851,7 @@
 				INFOPLIST_FILE = ios/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
 				LIBRARY_SEARCH_PATHS = "";
-				PROVISIONING_PROFILE = "9e06f5aa-e983-4bb1-b5de-e24976a10658";
+				PROVISIONING_PROFILE = "";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "";
@@ -857,7 +862,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = YES;
-				CODE_SIGN_IDENTITY = "iPhone Developer: hongxiang chen (TPW4A222GA)";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COMPRESS_PNG_FILES = NO;
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -876,7 +882,7 @@
 				INFOPLIST_FILE = ios/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
 				LIBRARY_SEARCH_PATHS = "";
-				PROVISIONING_PROFILE = "9e06f5aa-e983-4bb1-b5de-e24976a10658";
+				PROVISIONING_PROFILE = "";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "";
