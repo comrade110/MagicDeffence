@@ -7,7 +7,7 @@
 //
 
 #include "StartScene.h"
-#include "LoadingLayer.h"
+#include "GameScene.h"
 
 USING_NS_CC;
 
@@ -40,7 +40,7 @@ bool StartScene::init()
         auto origin = Director::getInstance()->getVisibleOrigin();
         MenuItemFont *start = MenuItemFont::create("Start game",  [&](Ref* sender)
                                                   {
-                                                      Director::getInstance()->replaceScene(LoadingLayer::scene());
+                                                      Director::getInstance()->replaceScene(GameScene::createScene());
                                                       log("Start game Callback called!");
                                                   }
                                                   );

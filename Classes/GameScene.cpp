@@ -38,9 +38,11 @@ bool GameScene::init(){
     {
         return false;
     }
-    auto background = Sprite::create("bg.png");
-    background->setPosition(Vec2::ZERO);
-    background->setAnchorPoint(Vec2::ZERO);
+    
+    Size visibleSize = Director::getInstance()->getVisibleSize();
+    auto background = Sprite::create("bg_cell.png", Rect(0, 0, visibleSize.width, visibleSize.height));
+    background->getTexture()->setTexParameters({GL_LINEAR, GL_LINEAR, GL_REPEAT,GL_REPEAT});
+    background->setPosition(Vec2(visibleSize.width/2, visibleSize.height/2));
     
     this->addChild(background);
     GameScene::addNewEnemyByLevel(0);
@@ -173,16 +175,18 @@ void GameScene::onTouchEnded(cocos2d::Touch *touch, cocos2d::Event *unused_event
     for (size_t i =0; i < len; i ++) {
         auto em = curWave.at(i);         // 获取enmey数组  主要目的是获取signarr
         
-        log("curi:%zu signArr.size:%zd ",i,em->getSignArr().size());
+        log(" curWave.capacity:%zd ",curWave.capacity());
         auto emy = curEnWave.at(i);      // 获取sprite
         auto sign = em->getSignArr().back();  // 获取signarr中最上层的一个
         
         //判断最上层标志是否与手势相符
         log("界面图片%d:用户手势%d",sign->getSignType(),this->resultTypeByName(Value(result.name)));
         if (sign->getSignType()==this->resultTypeByName(Value(result.name))) {
-            auto lastObj = emy->getChildren().back();      // 相等的话 直接获取sprite中子类最新一个精灵
-            lastObj->removeFromParent();// 移除该精灵
-            if (em->getChildrenCount()==0) {               // 移除之后判断有无子精灵
+            log(" em->getSignArr().capacity()-BEFORE:%zd getSignArrBEFORE:%zd ",emy->getChildrenCount(),em->getSignArr().size());
+            emy->removeChildByTag(sign->getTag());
+            em->getSignArr().eraseObject(sign);
+            log(" em->getSignArr().capacity():%zd getSignArr:%zd",emy->getChildrenCount(),em->getSignArr().size());
+            if (emy->getChildrenCount() == 0) {               // 移除之后判断有无子精灵
                 emy->removeFromParent();      // 没有则销毁该精灵
             }
         }

@@ -12,7 +12,7 @@ USING_NS_CC;
 Sprite* Sign::createSprite(cocos2d::Value weight, cocos2d::Value signRank){
     
     int curType = arc4random()%kEnumTypeCount+1;
-    Sprite* sp = Sprite::create(StringUtils::format("sign_%d.png",curType));
+    Sprite* sp = Sprite::create(StringUtils::format("sign_%d%d.png",curType,weight.asInt()));
     log("cur泰普:%d",curType);
     this->setSignType(curType);
     this->setSignWeight(weight);

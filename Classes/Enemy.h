@@ -37,7 +37,7 @@ public:
     void update(float dt) override;
     int getRandNum();
     void matchingSigns(cocos2d::Value str);
-    void addSigns(Sign* sn,Sprite* enemy);
+    void addSigns(Sign* sn,Sprite* enemy,int lvl);
     CC_SYNTHESIZE(cocos2d::Vector<Sign*>,signArr,SignArr);
 private:
 };

@@ -10,7 +10,7 @@
 #include "GameScene.h"
 USING_NS_CC;
 
-#define ToTalResCount 100
+#define ToTalResCount 40
 
 Scene* LoadingLayer::scene(){
     do {

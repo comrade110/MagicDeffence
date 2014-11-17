@@ -65,22 +65,28 @@ Sprite* Enemy::createEnemy(){
 //    this->addChild(enemy);
     FiniteTimeAction* r = RotateBy::create(2.f, 360.f);
     enemy->runAction(RepeatForever::create((ActionInterval*)r));
-    signNum = 1;
+    signNum = 2;
     scheduleUpdate();
     
     
-    for (int i=0; i<signNum; i++) {
+    for (int i=1; i<=signNum; i++) {
         //随机数种子
         Sign *sign = Sign::create();
-        Enemy::addSigns(sign,enemy);
+        sign->setTag(i);
+        log("shaW %.1f",sign->getContentSize().width);
+        log("shab %.1f",sign->getContentSize().height);
+        Enemy::addSigns(sign,enemy,i);
     }
-
+    log("singarr count:%zd",this->signArr.capacity());
     return enemy;
 }
 
-void Enemy::addSigns(Sign* sn,Sprite* enemy){
-    Sprite* sign = sn->createSprite(Value(1), Value(1));
-    sn->setPosition(Point(enemy->getContentSize().width/2,enemy->getContentSize().height/2));
+void Enemy::addSigns(Sign* sn,Sprite* enemy,int lvl){
+    Sprite* sign = sn->createSprite(Value(lvl), Value(1));
+    sign->setTag(sn->getTag());
+    log("sha2 %.1f",sn->getContentSize().width);
+    log("sha1 %.1f",sn->getContentSize().height);
+    sign->setPosition(sign->getContentSize().width/2, sign->getContentSize().height/2);
     enemy->addChild(sign);
     signArr.pushBack(sn);
 }
