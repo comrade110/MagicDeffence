@@ -10,7 +10,7 @@
 #include "GeometricRecognizer.h"
 #include "StartScene.h"
 USING_NS_CC;
-
+#include <stdio.h>
 
 GameScene::~GameScene(){
     CC_SAFE_DELETE(g_rGemertricRecognizer);
@@ -43,13 +43,12 @@ bool GameScene::init(){
     auto background = Sprite::create("bg_cell.png", Rect(0, 0, visibleSize.width, visibleSize.height));
     background->getTexture()->setTexParameters({GL_LINEAR, GL_LINEAR, GL_REPEAT,GL_REPEAT});
     background->setPosition(Vec2(visibleSize.width/2, visibleSize.height/2));
-    
-    this->addChild(background);
+    this->addChild(background,-1);
+    background->setGlobalZOrder(-1);
     GameScene::addNewEnemyByLevel(0);
     
     g_rGemertricRecognizer=new GeometricRecognizer;
     g_rGemertricRecognizer->loadTemplates();
-    
     
     auto listener1 = EventListenerTouchOneByOne::create();//创建一个触摸监听
     listener1->setSwallowTouches(true); //设置是否想下传递触摸
@@ -128,6 +127,12 @@ void GameScene::startDrop(float dt,Sprite* em){
 
 
 bool GameScene::onTouchBegan(cocos2d::Touch *touch, cocos2d::Event *unused_event){
+    
+    Point beginPoint = touch->getLocationInView();
+    beginPoint = Director::getInstance()->convertToGL(beginPoint);
+    // beginPoint 检测
+    pointList.push_back(beginPoint);
+    
     Point location = touch->getLocation();
     pre_point = cur_point = location;
     return true;
@@ -136,6 +141,32 @@ bool GameScene::onTouchBegan(cocos2d::Touch *touch, cocos2d::Event *unused_event
 
 
 void GameScene::onTouchMoved(cocos2d::Touch *touch, cocos2d::Event *unused_event){
+    
+    Point nextPoint = touch->getLocationInView( );
+    nextPoint = Director::getInstance()->convertToGL(nextPoint);
+    // nextPoint 检测
+    Point preMovePoint = touch->getPreviousLocationInView();
+    preMovePoint = Director::getInstance()->convertToGL(preMovePoint);
+    float distance = nextPoint.getDistance(preMovePoint);
+    if (distance > 1)
+    {
+        int d = (int)distance;
+        for (int i =0; i < d; i++ )
+        {
+            float distanceX = nextPoint.x - preMovePoint.x;
+            float distanceY = nextPoint.y - preMovePoint.y;
+            
+            float percent = i / distance;
+            Point newPoint;
+            newPoint.x = preMovePoint.x + (distanceX * percent);
+            newPoint.y = preMovePoint.y + (distanceY * percent);
+            
+            pointList.push_back(newPoint);
+        }
+    }
+
+    
+    
     Point location = touch->getLocation();
     cur_point = location;
     if((pre_point - cur_point).getLengthSq()>25){
@@ -152,6 +183,10 @@ void GameScene::onTouchMoved(cocos2d::Touch *touch, cocos2d::Event *unused_event
 }
 
 void GameScene::onTouchEnded(cocos2d::Touch *touch, cocos2d::Event *unused_event){
+    
+    pointList.clear();
+
+    
     Point location = touch->getLocation();
     cur_point = location;
     if((pre_point - cur_point).getLengthSq()>25){
@@ -172,10 +207,10 @@ void GameScene::onTouchEnded(cocos2d::Touch *touch, cocos2d::Event *unused_event
     }
     size_t len = curWave.size();
     
+    log(" 剩余数量 :%zd ",curWave.size());
     for (size_t i =0; i < len; i ++) {
         auto em = curWave.at(i);         // 获取enmey数组  主要目的是获取signarr
         
-        log(" curWave.capacity:%zd ",curWave.capacity());
         auto emy = curEnWave.at(i);      // 获取sprite
         auto sign = em->getSignArr().back();  // 获取signarr中最上层的一个
         
@@ -184,10 +219,16 @@ void GameScene::onTouchEnded(cocos2d::Touch *touch, cocos2d::Event *unused_event
         if (sign->getSignType()==this->resultTypeByName(Value(result.name))) {
             log(" em->getSignArr().capacity()-BEFORE:%zd getSignArrBEFORE:%zd ",emy->getChildrenCount(),em->getSignArr().size());
             emy->removeChildByTag(sign->getTag());
-            em->getSignArr().eraseObject(sign);
+            Vector<Sign*> arr = em->getSignArr();
+            arr.eraseObject(sign);
+            em->setSignArr(arr);
             log(" em->getSignArr().capacity():%zd getSignArr:%zd",emy->getChildrenCount(),em->getSignArr().size());
             if (emy->getChildrenCount() == 0) {               // 移除之后判断有无子精灵
-                emy->removeFromParent();      // 没有则销毁该精灵
+                em->removeFromParent();      // 没有则销毁该精灵
+                emy->removeFromParent();
+                curWave.eraseObject(em);
+                curEnWave.eraseObject(emy);
+                len = curWave.size();
             }
         }
         
@@ -218,11 +259,57 @@ int GameScene::resultTypeByName(Value v){
 
 
 void GameScene::draw(Renderer *renderer,const Mat4& transform,uint32_t flags){
-    DrawPrimitives::setDrawColor4B(0, 255, 255, 255);
-//    glLineWidth(4);
-//    for (std::vector<_segment >::const_iterator i=segment.begin(); i!=segment.end(); i++){
-//        DrawPrimitives::drawLine(i->p1, i->p2);
-//        DrawNode::draw;
-//    }
+    drawLine();
+    
 }
+
+void GameScene::drawLine()
+{
+    int tickSubCount = 10;
+    int pointListKeepCount = 500;
+    
+    for (int i=0; i<tickSubCount ; i++)
+    {
+        if (pointList.size() >0)
+        {
+            pointList.pop_front();
+        }
+        else
+        {
+            break;
+        }
+    }
+    while (pointList.size() > pointListKeepCount)
+    {
+        pointList.pop_front();
+    }
+    
+    float max_lineWidth = 5;
+    float min_lineWidth = 1;
+    int   alpha_min = 10;
+    int   alpha_max =  200;
+    
+    int  R = arc4random()%255;
+    int  G = arc4random()%255;
+    int  B = arc4random()%255;
+    
+    unsigned long pointListCount = pointList.size();
+    std::list <Point>::iterator it =pointList.begin();
+    
+    float pointIndex = 0;
+    for(;it!=pointList.end();it++)
+    {
+        int distanceToMiddle = fabs(pointIndex-pointListCount/2);
+        float percent = 1.0-(float)distanceToMiddle/(float)(pointListCount/2.0);
+        float lintWidth = min_lineWidth + max_lineWidth*percent;
+        int alpha = alpha_min +alpha_max*percent;
+        
+        Color4B(R,G,B,alpha);
+        DrawPrimitives::setPointSize(lintWidth);
+        DrawPrimitives::drawPoint( *it );
+        
+        pointIndex++;
+    }
+}
+
 

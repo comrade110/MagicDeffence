@@ -88,7 +88,7 @@ void Enemy::addSigns(Sign* sn,Sprite* enemy,int lvl){
     log("sha1 %.1f",sn->getContentSize().height);
     sign->setPosition(sign->getContentSize().width/2, sign->getContentSize().height/2);
     enemy->addChild(sign);
-    signArr.pushBack(sn);
+    this->signArr.pushBack(sn);
 }
 
 

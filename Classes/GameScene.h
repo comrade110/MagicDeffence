@@ -34,6 +34,9 @@ public:
     void startDrop(float dt,cocos2d::Sprite* em);
     int resultTypeByName(cocos2d::Value v);
     virtual void draw(cocos2d::Renderer *renderer,const cocos2d::Mat4& transform,uint32_t flags) override;
+    void drawLine();
+    std::list<cocos2d::Point> pointList;
+
 private:
     cocos2d::PhysicsWorld* m_world;
     GeometricRecognizer* g_rGemertricRecognizer;
