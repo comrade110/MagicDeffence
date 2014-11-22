@@ -256,10 +256,20 @@ int GameScene::resultTypeByName(Value v){
     return -1;
 
 }
-
+void GameScene::onDrawPrimitives(const Mat4 &transform, bool transformUpdated)
+{
+//    kmGLPushMatrix();
+//    kmGLLoadMatrix(&transform);
+    
+    //add your primitive drawing code here
+    drawLine();
+}
 
 void GameScene::draw(Renderer *renderer,const Mat4& transform,uint32_t flags){
-    drawLine();
+
+    _customCommand.init(_globalZOrder);
+    _customCommand.func = CC_CALLBACK_0(GameScene::onDrawPrimitives, this, transform, _transformUpdated);
+    renderer->addCommand(&_customCommand);
     
 }
 

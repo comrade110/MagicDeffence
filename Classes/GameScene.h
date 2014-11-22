@@ -38,6 +38,10 @@ public:
     std::list<cocos2d::Point> pointList;
 
 private:
+    //cocos2dx3.0+ 画线方法
+    void onDrawPrimitives(const cocos2d::Mat4 &transform, bool transformUpdated);
+    cocos2d::CustomCommand _customCommand;
+    
     cocos2d::PhysicsWorld* m_world;
     GeometricRecognizer* g_rGemertricRecognizer;
     Path2D p_2dPath;
