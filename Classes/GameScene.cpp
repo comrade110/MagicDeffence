@@ -308,11 +308,10 @@ void GameScene::onTouchEnded(cocos2d::Touch *touch, cocos2d::Event *unused_event
         return;
     }
     size_t len = curWave.size();
-    
+    ValueVector temp_vec;
     log(" 剩余数量 :%zd ",curWave.size());
-    for (size_t i =0; i < len; i ++) {
+    for (int i =0; i < len; i ++) {
         auto em = curWave.at(i);         // 获取enmey数组  主要目的是获取signarr
-        
         auto emy = curEnWave.at(i);      // 获取sprite
         auto sign = em->getSignArr().back();  // 获取signarr中最上层的一个
         
@@ -324,26 +323,15 @@ void GameScene::onTouchEnded(cocos2d::Touch *touch, cocos2d::Event *unused_event
             Vector<Sign*> arr = em->getSignArr();
             arr.eraseObject(sign);
             em->setSignArr(arr);
+            arr.clear();
             log(" em->getSignArr().capacity():%zd getSignArr:%zd",emy->getChildrenCount(),em->getSignArr().size());
             if (emy->getChildrenCount() == 0) {               // 移除之后判断有无子精灵
-                em->removeFromParent();      // 没有则销毁该精灵
-                emy->removeFromParent();
-                curWave.eraseObject(em);
-                curEnWave.eraseObject(emy);
-                len = curWave.size();
-                if (len == 0) {
-                    waveCount++;
-                    if (waveCount>=1&&waveCount<=3) {
-                        lvl = 1;
-                    }else if(waveCount>=4&&waveCount<=8){
-                        lvl = 2;
-                    }else if (waveCount>=9&&waveCount<=14){
-                        lvl = 3;
-                    }else if (waveCount>14){
-                        lvl = 4;
-                    }
-                    GameScene::addNewEnemyByLevel(lvl);
-                }
+//                em->removeFromParent();      // 没有则销毁该精灵
+//                emy->removeFromParent();
+//                curWave.eraseObject(em);
+//                curEnWave.eraseObject(emy);
+                temp_vec.push_back(Value(i));
+
             }else{
                 emy->stopActionByTag(DropActionTag);
                 GameScene::startDrop(10.f, emy,true);
@@ -351,7 +339,30 @@ void GameScene::onTouchEnded(cocos2d::Touch *touch, cocos2d::Event *unused_event
         }
         
     }
-
+    //
+    size_t curLen = len;
+    for(Value val:temp_vec){
+        int curIndex = val.asInt();
+        curWave.at(curIndex)->removeFromParent();
+        curEnWave.at(curIndex)->removeFromParent();
+        curWave.erase(curIndex);
+        curEnWave.erase(curIndex);
+        curLen--;
+        if (curLen == 0) {
+            waveCount++;
+            if (waveCount>=1&&waveCount<=3) {
+                lvl = 1;
+            }else if(waveCount>=4&&waveCount<=8){
+                lvl = 2;
+            }else if (waveCount>=9&&waveCount<=14){
+                lvl = 3;
+            }else if (waveCount>14){
+                lvl = 4;
+            }
+            GameScene::addNewEnemyByLevel(lvl);
+        }
+    }
+    temp_vec.clear();
 }
 
 int GameScene::resultTypeByName(Value v){
