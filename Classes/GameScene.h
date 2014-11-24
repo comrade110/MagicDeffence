@@ -30,15 +30,18 @@ public:
     virtual bool onTouchBegan(cocos2d::Touch *touch, cocos2d::Event *unused_event) override;
     virtual void onTouchMoved(cocos2d::Touch *touch, cocos2d::Event *unused_event) override;
     virtual void onTouchEnded(cocos2d::Touch *touch, cocos2d::Event *unused_event) override;
-    void addNewEnemyByLevel(int lvl);
-    void startDrop(float dt,cocos2d::Sprite* em);
+    int addNewEnemyByLevel(int lvl);
+    void startDrop(float dt,cocos2d::Sprite* em,bool isMoving);
     int resultTypeByName(cocos2d::Value v);
     virtual void draw(cocos2d::Renderer *renderer,const cocos2d::Mat4& transform,uint32_t flags) override;
     void drawLine();
     std::list<cocos2d::Point> pointList;
-
+    
+    
 private:
     //cocos2dx3.0+ 画线方法
+    int waveCount;
+    
     void onDrawPrimitives(const cocos2d::Mat4 &transform, bool transformUpdated);
     cocos2d::CustomCommand _customCommand;
     
@@ -52,6 +55,10 @@ private:
     cocos2d::Point cur_point;
     _segment seg;
     std::vector<_segment> segment;
+    
+    int lvl;
+    int hardControlForNumByLvl(int lvl);
+    int hardControlForCountByLvl(int lvl);
 };
 
 

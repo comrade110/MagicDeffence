@@ -226,7 +226,6 @@ namespace DollarRecognizer
 
 		points = normalizePath(points);
         for(Point2D po:points){
-            printf("path.push_back(Point2D(%.0f,%.0f));\n",po.x,po.y);
         }
 		//--- Initialize best distance to the largest possible number
 		//--- That way everything will be better than that

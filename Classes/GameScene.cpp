@@ -12,6 +12,9 @@
 USING_NS_CC;
 #include <stdio.h>
 
+
+#define DropActionTag 1000
+
 GameScene::~GameScene(){
     CC_SAFE_DELETE(g_rGemertricRecognizer);
 }
@@ -45,7 +48,11 @@ bool GameScene::init(){
     background->setPosition(Vec2(visibleSize.width/2, visibleSize.height/2));
     this->addChild(background,-1);
     background->setGlobalZOrder(-1);
-    GameScene::addNewEnemyByLevel(0);
+    
+    waveCount = 1;
+    lvl = 1;
+    
+    GameScene::addNewEnemyByLevel(1);
     
     g_rGemertricRecognizer=new GeometricRecognizer;
     g_rGemertricRecognizer->loadTemplates();
@@ -64,10 +71,92 @@ bool GameScene::init(){
     return true;
 }
 
-void GameScene::addNewEnemyByLevel(int lvl){
+
+
+
+// 每波数量控制
+int GameScene::hardControlForNumByLvl(int lvl){
+
     
+    switch (lvl) {
+        case 1:
+            return (arc4random()%2)+2;
+            break;
+        case 2:
+            return (arc4random()%3)+3;
+            break;
+        case 3:
+            return (arc4random()%2)+4;
+            break;
+        case 4:
+            return (arc4random()%2)+4;
+            break;
+        default:
+            return 0;
+            break;
+    }
+}
+
+// 每单位数量层级控制
+int GameScene::hardControlForCountByLvl(int lvl){
+    int curCount = arc4random()%100+1;
+    switch (lvl) {
+        case 1:{
+            if(curCount<=80){
+                return 1;
+            }else if(curCount<=95 && curCount>80){
+                return 2;
+            }else{
+                return 3;
+            }
+        }
+            break;
+        case 2:{
+            if(curCount<=60){
+                return 1;
+            }else if(curCount<=90 && curCount>60){
+                return 2;
+            }else{
+                return 3;
+            }
+        }
+            break;
+        case 3:{
+            if(curCount<=40){
+                return 1;
+            }else if(curCount<=70 && curCount>40){
+                return 2;
+            }else if(curCount<=90 && curCount>70){
+                return 3;
+            }else{
+                return 4;
+            }
+        }
+            break;
+        case 4:{
+            if(curCount>=35){
+                return 1;
+            }else if(curCount<=70 && curCount>35){
+                return 2;
+            }else if(curCount<=85 && curCount>70){
+                return 3;
+            }else{
+                return 4;
+            }
+        }
+            break;
+        default:
+            return 0;
+            break;
+    }
+}
+
+
+int GameScene::addNewEnemyByLevel(int lvl){
+    
+    float dropTime = 1 + ((lvl-1)/4);
     auto wSize = Director::getInstance()->getWinSize();
-    int quantity = 4;
+    int quantity = GameScene::hardControlForNumByLvl(lvl);
     int start = 0;
     int end = 8;
     int total = abs(end - start);
@@ -89,6 +178,8 @@ void GameScene::addNewEnemyByLevel(int lvl){
     
     for (int i = 0; i < quantity; i++) {
         Enemy * obj = Enemy::create();
+        int weight = GameScene::hardControlForCountByLvl(lvl);
+        obj->setEnemyWeight(weight);
         log("zhongzi:%d",(end-start+1)+start);
         int num = CCRANDOM_0_1()*end;//在指定范围下产生随机数
         output[i] = sequence[num];//将产生的随机数存储
@@ -101,18 +192,19 @@ void GameScene::addNewEnemyByLevel(int lvl){
         em->setPosition(f, wSize.height+80);
         log("--%d--%.2f-  %.2f-",output[i],f,width);
         this->addChild(em,i+100);
-        GameScene::startDrop(10.f, em);
+        GameScene::startDrop(20/dropTime+5*(weight-1), em, false);
         curWave.pushBack(obj);
         curEnWave.pushBack(em);
         
     }
+    return waveCount;
 }
 
 
 
-void GameScene::startDrop(float dt,Sprite* em){
+void GameScene::startDrop(float dt,Sprite* em,bool isMoving){
     auto winsize = Director::getInstance()->getWinSize();
-    DelayTime *delay = DelayTime::create(CCRANDOM_0_1()*1.5f);
+
     FiniteTimeAction *actionMove = MoveTo::create(dt, Point(em->getPosition().x, -winsize.height+em->getContentSize().height*.5));
     FiniteTimeAction *actionMoveDone = CallFuncN::create([&](Node* node){
         for (auto sp : curWave){
@@ -122,7 +214,17 @@ void GameScene::startDrop(float dt,Sprite* em){
         auto transition=TransitionFade::create(1.0f,scene);
         Director::getInstance()->replaceScene(transition);
     });
-    em->runAction(Sequence::create(delay,actionMove,actionMoveDone, NULL));
+
+    if (isMoving) {
+        Sequence *emyAction = Sequence::create(actionMove,actionMoveDone, NULL);
+        emyAction->setTag(DropActionTag);
+        em->runAction(emyAction);
+    }else{
+        DelayTime *delay = DelayTime::create(CCRANDOM_0_1()*1.5f);
+        Sequence *emyAction = Sequence::create(delay,actionMove,actionMoveDone, NULL);
+        emyAction->setTag(DropActionTag);
+        em->runAction(emyAction);
+    }
 }
 
 
@@ -202,7 +304,7 @@ void GameScene::onTouchEnded(cocos2d::Touch *touch, cocos2d::Event *unused_event
     RecognitionResult result = g_rGemertricRecognizer->recognize(p_2dPath);
     log("%s--%.2f",result.name.c_str(),result.score);
     p_2dPath.clear();
-    if (result.score<0.75) {
+    if (result.score<0.70) {
         return;
     }
     size_t len = curWave.size();
@@ -229,6 +331,22 @@ void GameScene::onTouchEnded(cocos2d::Touch *touch, cocos2d::Event *unused_event
                 curWave.eraseObject(em);
                 curEnWave.eraseObject(emy);
                 len = curWave.size();
+                if (len == 0) {
+                    waveCount++;
+                    if (waveCount>=1&&waveCount<=3) {
+                        lvl = 1;
+                    }else if(waveCount>=4&&waveCount<=8){
+                        lvl = 2;
+                    }else if (waveCount>=9&&waveCount<=14){
+                        lvl = 3;
+                    }else if (waveCount>14){
+                        lvl = 4;
+                    }
+                    GameScene::addNewEnemyByLevel(lvl);
+                }
+            }else{
+                emy->stopActionByTag(DropActionTag);
+                GameScene::startDrop(10.f, emy,true);
             }
         }
         
