@@ -190,7 +190,7 @@ int GameScene::addNewEnemyByLevel(int lvl){
         auto width = em->getContentSize().width;
         float f = output[i]*width+width*.5f;
         em->setPosition(f, wSize.height+80);
-        log("--%d--%.2f-  %.2f-",output[i],f,width);
+//        log("--%d--%.2f-  %.2f-",output[i],f,width);
         this->addChild(em,i+100);
         GameScene::startDrop(20/dropTime+5*(weight-1), em, false);
         curWave.pushBack(obj);
@@ -297,12 +297,10 @@ void GameScene::onTouchEnded(cocos2d::Touch *touch, cocos2d::Event *unused_event
         segment.push_back(seg);
         pre_point=cur_point;
     }
-    log("done");
     if (p_2dPath.size() < 1){
         return ;
     }
     RecognitionResult result = g_rGemertricRecognizer->recognize(p_2dPath);
-    log("%s--%.2f",result.name.c_str(),result.score);
     p_2dPath.clear();
     if (result.score<0.70) {
         return;
@@ -343,13 +341,15 @@ void GameScene::onTouchEnded(cocos2d::Touch *touch, cocos2d::Event *unused_event
     size_t curLen = len;
     for(Value val:temp_vec){
         int curIndex = val.asInt();
-        curWave.at(curIndex)->removeFromParent();
-        curEnWave.at(curIndex)->removeFromParent();
-        curWave.erase(curIndex);
-        curEnWave.erase(curIndex);
+        this->curWave.at(curIndex)->removeFromParent();
+        this->curEnWave.at(curIndex)->removeFromParent();
+        this->curWave.erase(curIndex);
+        this->curEnWave.erase(curIndex);
         curLen--;
         if (curLen == 0) {
             waveCount++;
+            this->curWave.clear();
+            this->curEnWave.clear();
             if (waveCount>=1&&waveCount<=3) {
                 lvl = 1;
             }else if(waveCount>=4&&waveCount<=8){
